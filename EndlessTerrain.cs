@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class EndlessTerrain : MonoBehaviour
 {
-    public const float maxViewDst = 300;
+    public const float maxViewDst = 450;
     public Transform viewer;
 
     public static Vector2 viewerPosition;
@@ -57,7 +57,7 @@ public class EndlessTerrain : MonoBehaviour
                 }
                 else
                 {
-                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize));
+                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform));
                 }
             }
         }
@@ -69,7 +69,7 @@ public class EndlessTerrain : MonoBehaviour
         GameObject meshObject;
         Bounds bounds;
 
-        public TerrainChunk(Vector2 coord, int size)
+        public TerrainChunk(Vector2 coord, int size, Transform parent)
         {
             position = coord * size;
             bounds = new Bounds(position, Vector2.one * size);
@@ -77,13 +77,16 @@ public class EndlessTerrain : MonoBehaviour
 
             meshObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
             meshObject.transform.position = positionV3;
-            meshObject.transform.localScale = Vector3.one * size;
+            meshObject.transform.localScale = Vector3.one * size / 10f;
+            SetVisible(false);
+            meshObject.transform.parent = parent;
         }
 
         public void UpdateTerrainChunk()
         {
             float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
             bool visible = viewerDistanceFromNearestEdge <= maxViewDst;
+            SetVisible(visible);
         }
 
         public void SetVisible(bool visible)
